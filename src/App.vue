@@ -1,0 +1,309 @@
+<template>
+  <div class="min-h-full">
+    <div class="bg-indigo-600">
+      <Disclosure as="nav" class="bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none" v-slot="{ open }">
+        <div class="max-w-6xl px-2 mx-auto sm:px-4 lg:px-8">
+          <div class="relative flex items-center justify-between h-16 lg:border-b lg:border-indigo-400 lg:border-opacity-25">
+            <div class="flex items-center px-2 lg:px-0">
+                <div class="hidden text-white lg:block">
+                    WeatherApp
+                    <!-- <img class="block w-8 h-8" src="https://tailwindui.com/img/logos/workflow-mark-indigo-300.svg" alt="Workflow" /> -->
+                </div>
+                <!-- <div class="hidden lg:block lg:ml-10">
+                <div class="flex space-x-4">
+                  <a v-for="item in navigation" :key="item.name" :href="item.href" :class="[item.current ? 'bg-indigo-700 text-white' : 'text-white hover:bg-indigo-500 hover:bg-opacity-75', 'rounded-md py-2 px-3 text-sm font-medium']" :aria-current="item.current ? 'page' : undefined">
+                    {{ item.name }}
+                  </a>
+                </div>
+              </div> -->
+            </div>
+            <div class="flex justify-center flex-1 lg:ml-6 lg:justify-end">
+              <div class="w-full max-w-lg lg:max-w-lg">
+                <label for="search" class="sr-only">Search</label>
+                <div class="relative text-gray-400 focus-within:text-gray-600">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <SearchIcon class="w-5 h-5" aria-hidden="true" />
+                    </div>
+                    <input id="search" class="block w-full py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 bg-white border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white focus:border-white sm:text-sm" 
+                        placeholder="Enter post code or town" 
+                        type="search" 
+                        name="search" 
+                        v-model="searchInput"
+                        @keyup.enter="getSearchedLocation"/>
+                </div>
+              </div>
+              <button class="px-2 ml-2 leading-5 text-white border-2 rounded-md cursor-pointer hover:bg-white hover:text-indigo-500"
+                @click="getSearchedLocation"
+              >Search</button>
+              <div class="items-center hidden p-2 ml-4 text-white border-2 border-white rounded-full cursor-pointer md:flex hover:bg-white hover:text-indigo-500"
+                    >
+                    <LocationMarkerIcon class="w-5 h-5" aria-hidden="true" @click="getCurrentLocation"/>
+              </div>
+            </div>
+
+            <div class="flex lg:hidden">
+              <!-- Mobile menu button -->
+              <DisclosureButton class="inline-flex items-center justify-center p-2 text-indigo-200 bg-indigo-600 rounded-md hover:text-white hover:bg-indigo-500 hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
+                <span class="sr-only">Open main menu</span>
+                <MenuIcon v-if="!open" class="block w-6 h-6" aria-hidden="true" />
+                <XIcon v-else class="block w-6 h-6" aria-hidden="true" />
+              </DisclosureButton>
+            </div>
+
+            <!-- <div class="hidden lg:block lg:ml-4">
+              <div class="flex items-center">
+                <button type="button" class="flex-shrink-0 p-1 text-indigo-200 bg-indigo-600 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
+                  <span class="sr-only">View notifications</span>
+                  <BellIcon class="w-6 h-6" aria-hidden="true" />
+                </button>
+
+                <Menu as="div" class="relative flex-shrink-0 ml-3">
+                  <div>
+                    <MenuButton class="flex text-sm text-white bg-indigo-600 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
+                      <span class="sr-only">Open user menu</span>
+                      <img class="w-8 h-8 rounded-full" :src="user.imageUrl" alt="" />
+                    </MenuButton>
+                  </div>
+                  <transition enter-active-class="transition duration-100 ease-out" enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="transform scale-100 opacity-100" leave-to-class="transform scale-95 opacity-0">
+                    <MenuItems class="absolute right-0 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
+                        <a :href="item.href" :class="[active ? 'bg-gray-100' : '', 'block py-2 px-4 text-sm text-gray-700']">
+                          {{ item.name }}
+                        </a>
+                      </MenuItem>
+                    </MenuItems>
+                  </transition>
+                </Menu>
+              </div>
+            </div> -->
+          </div>
+        </div>
+
+        <DisclosurePanel class="lg:hidden">
+          <div class="px-2 pt-2 pb-3 space-y-1">
+            <DisclosureButton v-for="item in navigation" :key="item.name" as="a" :href="item.href" :class="[item.current ? 'bg-indigo-700 text-white' : 'text-white hover:bg-indigo-500 hover:bg-opacity-75', 'block rounded-md py-2 px-3 text-base font-medium']" :aria-current="item.current ? 'page' : undefined">
+              {{ item.name }}
+            </DisclosureButton>
+          </div>
+          <div class="pt-4 pb-3 border-t border-indigo-700">
+            <div class="flex items-center px-5">
+              <div class="flex-shrink-0">
+                <img class="w-10 h-10 rounded-full" :src="user.imageUrl" alt="" />
+              </div>
+              <div class="ml-3">
+                <div class="text-base font-medium text-white">{{ user.name }}</div>
+                <div class="text-sm font-medium text-indigo-300">{{ user.email }}</div>
+              </div>
+              <button type="button" class="flex-shrink-0 p-1 ml-auto text-indigo-200 bg-indigo-600 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
+                <span class="sr-only">View notifications</span>
+                <BellIcon class="w-6 h-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="px-2 mt-3 space-y-1">
+              <DisclosureButton v-for="item in userNavigation" :key="item.name" as="a" :href="item.href" class="block px-3 py-2 text-base font-medium text-white rounded-md hover:bg-indigo-500 hover:bg-opacity-75">
+                {{ item.name }}
+              </DisclosureButton>
+            </div>
+          </div>
+        </DisclosurePanel>
+        
+      </Disclosure>
+      
+    </div>
+
+    <main class="mt-8">
+        <div class="max-w-6xl px-4 pb-12 mx-auto sm:px-6 lg:px-8">
+            <h1 class="mb-2 text-2xl font-bold text-gray-700">{{locationResults ? locationResults.city +',' : 'Finding Location' }} {{ locationResults ? locationResults.county +',' : '' }} {{ locationResults ? locationResults.country : '' }}</h1>
+            <div class="max-w-full border border-gray-200 rounded-md h-96">
+                <div v-if="viewToday" class="">
+                    <div class="p-4 text-white rounded-t-md" :class="getColour(weather.description)">
+                        Today - {{ weather.description }}
+                    </div>
+                    <div  class="px-4 py-2 text-gray-700 text-md">
+                        <!-- <span class="text-7xl">{{ !selectedDay.temp.max ? weather.temp + '°' : selectedDay.temp.max + '°' }}</span><br> -->
+                        <span class="text-7xl">{{ weather.temp ? weather.temp.toFixed() + '°' : ''}}</span><br>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="p-4 text-white rounded-t-md" :class="getColour(selectedDay.weather[0].main)">
+                        {{ String(new Date((selectedDay.dt)*1000)).substring(0,10) }} - {{ selectedDay.weather[0].main }}
+                    </div>
+                    <div  class="px-4 py-2 text-gray-700 text-md">
+                        <!-- <span class="text-7xl">{{ !selectedDay.temp.max ? weather.temp + '°' : selectedDay.temp.max + '°' }}</span><br> -->
+                        <span class="text-7xl">{{ selectedDay.temp.max.toFixed() + '°' }}</span><br>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="grid grid-flow-col grid-rows-1 gap-2 mt-4">
+                    
+                    <div v-for="(day, key) in weather.forcast.daily" :key="key">
+                        <div v-if="key <= 0" class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer" @click="viewToday = true">
+                            <div class="p-4 text-center text-white rounded-t-md" :class="getColour(weather.description)">
+                                Today   
+                            </div>
+                            <div class="p-2">
+                                {{ weather.temp.toFixed() }} / {{ weather.feels_like.toFixed() }}
+                            </div>
+                        </div>
+                        <div v-else class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer" @click="selectDay(day)">
+                            <div class="p-4 text-center text-white rounded-t-md" :class="getColour(day.weather[0].main)">
+                                {{ String(new Date((day.dt)*1000)).substring(0,10) }}
+                            </div>
+                            <div class="p-2">
+                                {{ day.temp.max.toFixed() + '°' }} / {{ day.temp.min.toFixed() + '°' }} - {{ day.weather[0].main }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </main>
+  </div>
+</template>
+
+<script>
+//import { ref, onMounted } from 'vue'
+import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { SearchIcon } from '@heroicons/vue/solid'
+import { BellIcon, MenuIcon, XIcon, LocationMarkerIcon } from '@heroicons/vue/outline'
+import axios from 'axios'
+
+const user = {
+  name: 'Tom Cook',
+  email: 'tom@example.com',
+  imageUrl:
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+}
+const navigation = [
+  { name: 'Dashboard', href: '#', current: true },
+  { name: 'Team', href: '#', current: false },
+  { name: 'Projects', href: '#', current: false },
+  { name: 'Calendar', href: '#', current: false },
+  { name: 'Reports', href: '#', current: false },
+]
+const userNavigation = [
+  { name: 'Your Profile', href: '#' },
+  { name: 'Settings', href: '#' },
+  { name: 'Sign out', href: '#' },
+]
+
+// api key 8ace09d069a441f3aa8225743221504
+
+export default {
+    components: {
+    Disclosure,
+    DisclosureButton,
+    DisclosurePanel,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuItems,
+    BellIcon,
+    MenuIcon,
+    SearchIcon,
+    XIcon,
+    LocationMarkerIcon
+    },
+    data () {
+        return {
+            searchInput: null,
+            viewToday: true,
+            locationResults: {},
+            weather: {
+                temp: null,
+                feels_like: null,
+                description: null,
+                forcast: {
+                    daily: []
+                }
+            },
+            selectedDay: {
+                temp: {
+                    max: null,
+                    min: null
+                },
+                weather: [
+                    {
+                        main: null,
+                        description: null
+                    }
+                ]
+            },
+            units: 'metric'
+        }
+    },
+    methods: {
+        getCurrentLocation() {
+            let vm = this;
+            var options = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            };
+            function success(pos) {
+                var data = {
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude
+                }
+                vm.getCurrentLocationName(data)
+            }
+            function error(err) {
+                console.warn(`ERROR(${err.code}): ${err.message}`);
+            }
+            navigator.geolocation.getCurrentPosition(success, error, options);
+        },
+        getCurrentLocationName(location){
+            var searchQuery = location.latitude + ' ' + location.longitude
+            axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchQuery}&format=json&apiKey=${'7a651eee8519432596636c4cc8ef8de7'}`).then(res => {
+                this.locationResults = res.data.results[0]
+                this.getWeather()
+            })
+        },
+        getSearchedLocation() {
+            axios.get(`https://api.geoapify.com/v1/geocode/search?text=${this.searchInput}&format=json&apiKey=${'7a651eee8519432596636c4cc8ef8de7'}`).then(res => {
+                this.locationResults = res.data.results[0]
+                this.getWeather()
+            })
+        },
+        getWeather() {
+            axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${this.locationResults.bbox.lat1}&lon=${this.locationResults.bbox.lon1}&units=${this.units}&appid=1a9be1417e0b10b37966c6b492063917`).then(res => {
+                this.weather.temp = res.data.current.temp
+                this.weather.feels_like = res.data.current.feels_like
+                this.weather.description = res.data.current.weather[0].main
+                this.weather.forcast.daily = res.data.daily
+            })
+        },
+        selectDay(day) {
+            this.viewToday = false
+            this.selectedDay = day
+            console.log(this.selectedDay.weather);
+        },
+        getColour(text) {
+            //console.log(text);
+            var banner = 'bg-gray-400'
+            if (text === 'Rain') {
+                banner = 'bg-blue-400'
+            } else if (text === 'Clouds') {
+                banner = 'bg-gray-400'
+            } else {
+                banner = 'bg-yellow-400'
+            }
+            return banner
+        }
+    },
+    computed: {
+        
+    },
+    mounted() {
+        this.getCurrentLocation()
+    }
+}
+</script>
+
+<style>
+body {
+    height: 100%;
+}
+</style>
