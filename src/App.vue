@@ -2,7 +2,7 @@
   <div class="min-h-full">
     <div class="bg-indigo-600">
       <Disclosure as="nav" class="bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none" v-slot="{ open }">
-        <div class="max-w-6xl px-2 mx-auto sm:px-4 lg:px-8">
+        <div class="px-2 mx-auto max-w-7xl sm:px-4 lg:px-8">
           <div class="relative flex items-center justify-between h-16 lg:border-b lg:border-indigo-400 lg:border-opacity-25">
             <div class="flex items-center px-2 lg:px-0">
                 <div class="hidden text-white lg:block">
@@ -25,7 +25,7 @@
                         <SearchIcon class="w-5 h-5" aria-hidden="true" />
                     </div>
                     <input id="search" class="block w-full py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 bg-white border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white focus:border-white sm:text-sm" 
-                        placeholder="Enter post code or town" 
+                        placeholder="Enter post code, city or town" 
                         type="search" 
                         name="search" 
                         v-model="searchInput"
@@ -112,8 +112,8 @@
     </div>
 
     <main class="mt-8">
-        <div class="max-w-6xl px-4 pb-12 mx-auto sm:px-6 lg:px-8">
-            <h1 class="mb-2 text-2xl font-bold text-gray-700">{{locationResults ? locationResults.city +',' : 'Finding Location' }} {{ locationResults ? locationResults.county +',' : '' }} {{ locationResults ? locationResults.country : '' }}</h1>
+        <div class="px-4 pb-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <h1 class="mb-2 text-2xl font-bold text-gray-700">{{ locationResults ? locationResults.city +',' : 'Finding Location' }} {{ locationResults ? locationResults.county +',' : '' }} {{ locationResults ? locationResults.country : '' }}</h1>
             <div class="max-w-full border border-gray-200 rounded-md h-96">
                 <div v-if="viewToday" class="">
                     <div class="p-4 text-white rounded-t-md" :class="getColour(weather.description)">
@@ -122,6 +122,21 @@
                     <div  class="px-4 py-2 text-gray-700 text-md">
                         <!-- <span class="text-7xl">{{ !selectedDay.temp.max ? weather.temp + '°' : selectedDay.temp.max + '°' }}</span><br> -->
                         <span class="text-7xl">{{ weather.temp ? weather.temp.toFixed() + '°' : ''}}</span><br>
+
+                        <div class="items-center hidden h-48 grid-flow-col gap-2 md:grid">
+                            <div class="grid grid-flow-col gap-2 overflow-y-scroll">
+                                <div class="w-1/2" v-for="(hour, key) in weather.hourly" :key="key">
+                                   <div v-if="checkTime(hour.dt)">
+                                       <div>
+                                        {{ String(new Date((hour.dt)*1000)).substring(15,21)}}
+                                        </div>
+                                        <div class="h-24 p-4 border border-gray-400 rounded-md w-36">
+                                            {{ hour.temp }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div v-else>
@@ -131,19 +146,26 @@
                     <div  class="px-4 py-2 text-gray-700 text-md">
                         <!-- <span class="text-7xl">{{ !selectedDay.temp.max ? weather.temp + '°' : selectedDay.temp.max + '°' }}</span><br> -->
                         <span class="text-7xl">{{ selectedDay.temp.max.toFixed() + '°' }}</span><br>
+                        {{ selectedDay.temp.day }}
+                        {{ selectedDay.temp.eve }}
+                        {{ selectedDay.temp.max }}
+                        {{ selectedDay.temp.min }}
+                        {{ selectedDay.temp.morn }}
+                        {{ selectedDay.temp.night }}
+                        
                     </div>
                 </div>
             </div>
             <div>
-                <div class="grid grid-flow-col grid-rows-1 gap-2 mt-4">
+                <div class="grid grid-rows-1 gap-2 mt-4 md:grid-cols-2 lg:grid-flow-col">
                     
                     <div v-for="(day, key) in weather.forcast.daily" :key="key">
                         <div v-if="key <= 0" class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer" @click="viewToday = true">
                             <div class="p-4 text-center text-white rounded-t-md" :class="getColour(weather.description)">
-                                Today   
+                                Today
                             </div>
                             <div class="p-2">
-                                {{ weather.temp.toFixed() }} / {{ weather.feels_like.toFixed() }}
+                                {{ weather.temp.toFixed() }} / {{ weather.feels_like.toFixed() }} - {{ weather.description }}
                             </div>
                         </div>
                         <div v-else class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer" @click="selectDay(day)">
@@ -215,6 +237,7 @@ export default {
                 temp: null,
                 feels_like: null,
                 description: null,
+                hourly: [],
                 forcast: {
                     daily: []
                 }
@@ -272,6 +295,7 @@ export default {
                 this.weather.temp = res.data.current.temp
                 this.weather.feels_like = res.data.current.feels_like
                 this.weather.description = res.data.current.weather[0].main
+                this.weather.hourly = res.data.hourly
                 this.weather.forcast.daily = res.data.daily
             })
         },
@@ -291,13 +315,25 @@ export default {
                 banner = 'bg-yellow-400'
             }
             return banner
+        },
+        checkTime(hour) {
+            var today = new Date((hour)*1000)
+            var tomorrow = new Date()
+            tomorrow.setHours(24,0,0,0)
+            if (today < tomorrow) {
+                return true
+            } else {
+                return false
+            }
         }
+        
     },
     computed: {
         
     },
     mounted() {
         this.getCurrentLocation()
+        this.checkTime()
     }
 }
 </script>
