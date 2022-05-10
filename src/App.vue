@@ -114,24 +114,33 @@
     <main class="mt-8">
         <div class="px-4 pb-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <h1 class="mb-2 text-2xl font-bold text-gray-700">{{ locationResults ? locationResults.city +',' : 'Finding Location' }} {{ locationResults ? locationResults.county +',' : '' }} {{ locationResults ? locationResults.country : '' }}</h1>
-            <div class="max-w-full border border-gray-200 rounded-md h-96">
+            <div class="max-w-full border border-gray-200 rounded-md">
                 <div v-if="viewToday" class="">
                     <div class="p-4 text-white rounded-t-md" :class="getColour(weather.description)">
                         Today - {{ weather.description }}
                     </div>
                     <div  class="px-4 py-2 text-gray-700 text-md">
                         <!-- <span class="text-7xl">{{ !selectedDay.temp.max ? weather.temp + '°' : selectedDay.temp.max + '°' }}</span><br> -->
-                        <span class="text-7xl">{{ weather.temp ? weather.temp.toFixed() + '°' : ''}}</span><br>
+                        <span class="text-7xl">{{ weather.temp ? weather.temp.toFixed() + '°' : ''}}</span>
+                        <span>Highs of {{ weather.forcast.daily[0].temp.max.toFixed() + '°'}}</span>
+                        <span>Lows of {{ weather.forcast.daily[0].temp.min.toFixed() + '°'}}</span>
+                        <span>Sunrise {{ String(new Date((weather.sunrise)*1000)).substring(15,21) }} </span>
+                        <span> Sunset {{ String(new Date((weather.sunset)*1000)).substring(15,21) }}</span>
+                        <span> Wind speed {{ weather.forcast.daily[0].wind_speed.toFixed() + 'mph' }}</span>
+                        <span> Wind gusts {{ weather.forcast.daily[0].wind_gust.toFixed() + 'mph' }}</span>
+                        
+                        <br>
 
-                        <div class="items-center hidden h-48 grid-flow-col gap-2 md:grid">
+                        <div class="items-center hidden h-64 grid-flow-col gap-2 md:grid">
                             <div class="grid grid-flow-col gap-2 overflow-y-scroll">
                                 <div class="w-1/2" v-for="(hour, key) in weather.hourly" :key="key">
                                    <div v-if="checkTime(hour.dt)">
                                        <div>
                                         {{ String(new Date((hour.dt)*1000)).substring(15,21)}}
                                         </div>
-                                        <div class="h-24 p-4 border border-gray-400 rounded-md w-36">
-                                            {{ hour.temp }}
+                                        <div class="w-48 h-48 p-4 border border-gray-400 rounded-md">
+                                            {{ hour.temp.toFixed() + '°' }} <br>
+                                            {{ hour.weather[0].description }}
                                         </div>
                                     </div>
                                 </div>
@@ -145,7 +154,8 @@
                     </div>
                     <div  class="px-4 py-2 text-gray-700 text-md">
                         <!-- <span class="text-7xl">{{ !selectedDay.temp.max ? weather.temp + '°' : selectedDay.temp.max + '°' }}</span><br> -->
-                        <span class="text-7xl">{{ selectedDay.temp.max.toFixed() + '°' }}</span><br>
+                        <span class="text-7xl">Highs of {{ selectedDay.temp.max.toFixed() + '°' }}</span><br>
+                        <span class="text-7xl">Lows of {{ selectedDay.temp.min.toFixed() + '°' }}</span><br>
                         {{ selectedDay.temp.day }}
                         {{ selectedDay.temp.eve }}
                         {{ selectedDay.temp.max }}
@@ -158,17 +168,16 @@
             </div>
             <div>
                 <div class="grid grid-rows-1 gap-2 mt-4 md:grid-cols-2 lg:grid-flow-col">
-                    
                     <div v-for="(day, key) in weather.forcast.daily" :key="key">
                         <div v-if="key <= 0" class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer" @click="viewToday = true">
                             <div class="p-4 text-center text-white rounded-t-md" :class="getColour(weather.description)">
                                 Today
                             </div>
                             <div class="p-2">
-                                {{ weather.temp.toFixed() }} / {{ weather.feels_like.toFixed() }} - {{ weather.description }}
+                                {{ weather.temp.toFixed() + '°' }} / {{ weather.feels_like.toFixed()+ '°' }} - {{ weather.description }}
                             </div>
                         </div>
-                        <div v-else class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer" @click="selectDay(day)">
+                        <div v-else class="w-full h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer " @click="selectDay(day)">
                             <div class="p-4 text-center text-white rounded-t-md" :class="getColour(day.weather[0].main)">
                                 {{ String(new Date((day.dt)*1000)).substring(0,10) }}
                             </div>
@@ -235,6 +244,8 @@ export default {
             locationResults: {},
             weather: {
                 temp: null,
+                sunrise: null,
+                sunset: null,
                 feels_like: null,
                 description: null,
                 hourly: [],
@@ -293,6 +304,8 @@ export default {
         getWeather() {
             axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${this.locationResults.bbox.lat1}&lon=${this.locationResults.bbox.lon1}&units=${this.units}&appid=1a9be1417e0b10b37966c6b492063917`).then(res => {
                 this.weather.temp = res.data.current.temp
+                this.weather.sunrise = res.data.current.sunrise
+                this.weather.sunset = res.data.current.sunset
                 this.weather.feels_like = res.data.current.feels_like
                 this.weather.description = res.data.current.weather[0].main
                 this.weather.hourly = res.data.hourly
