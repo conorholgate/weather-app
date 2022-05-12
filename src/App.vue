@@ -113,81 +113,113 @@
 
     <main class="mt-8">
         <div class="px-4 pb-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <h1 class="mb-2 text-2xl font-bold text-gray-700">{{ locationResults ? locationResults.city +',' : 'Finding Location' }} {{ locationResults ? locationResults.county +',' : '' }} {{ locationResults ? locationResults.country : '' }}</h1>
-            <div class="max-w-full border border-gray-200 rounded-md">
-                <div v-if="viewToday" class="">
-                    <div class="p-4 text-white rounded-t-md" :class="getColour(weather.description)">
-                        Today - {{ weather.description }}
-                    </div>
-                    <div  class="px-4 py-2 text-gray-700 text-md">
-                        <!-- <span class="text-7xl">{{ !selectedDay.temp.max ? weather.temp + '°' : selectedDay.temp.max + '°' }}</span><br> -->
-                        <span class="text-7xl">{{ weather.temp ? weather.temp.toFixed() + '°' : ''}}</span>
-                        <span>Highs of {{ weather.forcast.daily[0].temp.max.toFixed() + '°'}}</span>
-                        <span>Lows of {{ weather.forcast.daily[0].temp.min.toFixed() + '°'}}</span>
-                        <span>Sunrise {{ String(new Date((weather.sunrise)*1000)).substring(15,21) }} </span>
-                        <span> Sunset {{ String(new Date((weather.sunset)*1000)).substring(15,21) }}</span>
-                        <span> Wind speed {{ weather.forcast.daily[0].wind_speed.toFixed() + 'mph' }}</span>
-                        <span> Wind gusts {{ weather.forcast.daily[0].wind_gust.toFixed() + 'mph' }}</span>
-                        
-                        <br>
+            <div v-if="locationResults.city">
+                <div>
+                    <h1 class="mb-2 text-2xl font-bold text-gray-700">{{ locationResults ? locationResults.city +',' : 'Finding Location' }} {{ locationResults.county ? locationResults.county +',' : '' }} {{ locationResults.country ? locationResults.country : '' }}</h1>
+                </div>
 
-                        <div class="items-center hidden h-64 grid-flow-col gap-2 md:grid">
-                            <div class="grid grid-flow-col gap-2 overflow-y-scroll">
-                                <div class="w-1/2" v-for="(hour, key) in weather.hourly" :key="key">
-                                   <div v-if="checkTime(hour.dt)">
-                                       <div>
-                                        {{ String(new Date((hour.dt)*1000)).substring(15,21)}}
-                                        </div>
-                                        <div class="w-48 h-48 p-4 border border-gray-400 rounded-md">
-                                            {{ hour.temp.toFixed() + '°' }} <br>
-                                            {{ hour.weather[0].description }}
+                <div class="max-w-full border border-gray-200 rounded-md">
+                    <div v-if="viewToday" class="">
+                        <div class="p-4 text-white rounded-t-md" :class="getColour(weather.description)">
+                            Today - {{ weather.description }}
+                        </div>
+                        <div  class="px-4 py-2 text-gray-700 text-md">
+                            <div class="flex items-center">
+                                <span class="mr-4 text-7xl">{{ weather.temp ? weather.temp.toFixed() + '°' : ''}}</span>
+                                <div v-if="weather.max && weather.min" class="flex w-full justify-evenly">
+                                    <div>
+                                        <span>Highs of {{ weather.max.toFixed() + '°'}} | </span>
+                                        <span>Lows of {{ weather.min.toFixed() + '°'}}</span>
+                                    </div>
+                                    <div>
+                                        <span>Sunrise {{ String(new Date((weather.sunrise)*1000)).substring(15,21) }} | </span>
+                                        <span> Sunset {{ String(new Date((weather.sunset)*1000)).substring(15,21) }}</span>
+                                    </div>
+                                    <div>
+                                        <span> Wind speed {{ weather.windspeed + 'mph' }} | </span>
+                                        <span> Wind gusts {{ weather.windgust + 'mph' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="items-center hidden h-64 grid-flow-col gap-2 md:grid">
+                                <div class="grid grid-flow-col gap-2 overflow-y-scroll">
+                                    <div class="w-1/2" v-for="(hour, key) in weather.hourly" :key="key">
+                                    <div v-if="checkTime(hour.dt)">
+                                        <div>
+                                            {{ String(new Date((hour.dt)*1000)).substring(15,21)}}
+                                            </div>
+                                            <div class="p-4 border border-gray-400 rounded-md w-36 h-36">
+                                                {{ hour.temp.toFixed() + '°' }} <br>
+                                                {{ hour.weather[0].description }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div v-else>
-                    <div class="p-4 text-white rounded-t-md" :class="getColour(selectedDay.weather[0].main)">
-                        {{ String(new Date((selectedDay.dt)*1000)).substring(0,10) }} - {{ selectedDay.weather[0].main }}
+                    <div v-else>
+                        <div class="p-4 text-white rounded-t-md" :class="getColour(selectedDay.weather[0].main)">
+                            {{ String(new Date((selectedDay.dt)*1000)).substring(0,10) }} - {{ selectedDay.weather[0].main }}
+                        </div>
+                        <div  class="flex flex-col px-4 py-2 text-gray-700 text-md">
+
+                            <div class="flex items-center">
+                                <div v-if="selectedDay.temp.max && selectedDay.temp.min" class="flex w-full justify-evenly">
+                                    <div>
+                                        <span>Highs of {{selectedDay.temp.max.toFixed() + '°'}} | </span>
+                                        <span>Lows of {{ selectedDay.temp.min.toFixed() + '°'}}</span>
+                                    </div>
+                                    <div>
+                                        <span>Sunrise {{ String(new Date((selectedDay.sunrise)*1000)).substring(15,21) }} | </span>
+                                        <span> Sunset {{ String(new Date((selectedDay.sunset)*1000)).substring(15,21) }}</span>
+                                    </div>
+                                    <div>
+                                        <span> Wind speed {{ selectedDay.wind_speed + 'mph' }} | </span>
+                                        <span> Wind gusts {{ selectedDay.wind_gust + 'mph' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
                     </div>
-                    <div  class="px-4 py-2 text-gray-700 text-md">
-                        <!-- <span class="text-7xl">{{ !selectedDay.temp.max ? weather.temp + '°' : selectedDay.temp.max + '°' }}</span><br> -->
-                        <span class="text-7xl">Highs of {{ selectedDay.temp.max.toFixed() + '°' }}</span><br>
-                        <span class="text-7xl">Lows of {{ selectedDay.temp.min.toFixed() + '°' }}</span><br>
-                        {{ selectedDay.temp.day }}
-                        {{ selectedDay.temp.eve }}
-                        {{ selectedDay.temp.max }}
-                        {{ selectedDay.temp.min }}
-                        {{ selectedDay.temp.morn }}
-                        {{ selectedDay.temp.night }}
-                        
+                </div>
+                <div>
+                    <div class="grid grid-rows-1 gap-2 mt-4 md:grid-cols-2 lg:grid-flow-col">
+                        <div v-for="(day, key) in weather.forcast.daily" :key="key">
+                            <div v-if="key <= 0" class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer" @click="viewToday = true">
+                                <div class="p-4 text-center text-white rounded-t-md" :class="getColour(weather.description)">
+                                    Today
+                                </div>
+                                <div class="p-2">
+                                    {{ weather.temp.toFixed() + '°' }} / {{ weather.feels_like.toFixed()+ '°' }} - {{ weather.description }}
+                                </div>
+                                <div class="flex justify-center">
+                                    <img v-if="weather.description === 'Clouds'" src="src/assets/icons8-clouds-32.png" alt="">
+                                    <img v-if="weather.description === 'Rain'" src="src/assets/icons8-rain-32.png" alt="">
+                                    <img v-if="weather.description === 'Clear'" src="src/assets/icons8-sun-32.png" alt="">
+                                </div>
+                            </div>
+                            <div v-else class="w-full h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer " @click="selectDay(day)">
+                                <div class="p-4 text-center text-white rounded-t-md" :class="getColour(day.weather[0].main)">
+                                    {{ String(new Date((day.dt)*1000)).substring(0,10) }}
+                                </div>
+                                <div class="p-2">
+                                    {{ day.temp.max.toFixed() + '°' }} / {{ day.temp.min.toFixed() + '°' }} - {{ day.weather[0].main }}
+                                </div>
+                                <div class="flex justify-center">
+                                    <img v-if="day.weather[0].main === 'Clouds'" src="src/assets/icons8-clouds-32.png" alt="">
+                                    <img v-if="day.weather[0].main === 'Rain'" src="src/assets/icons8-rain-32.png" alt="">
+                                    <img v-if="day.weather[0].main === 'Clear'" src="src/assets/icons8-sun-32.png" alt="">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div>
-                <div class="grid grid-rows-1 gap-2 mt-4 md:grid-cols-2 lg:grid-flow-col">
-                    <div v-for="(day, key) in weather.forcast.daily" :key="key">
-                        <div v-if="key <= 0" class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer" @click="viewToday = true">
-                            <div class="p-4 text-center text-white rounded-t-md" :class="getColour(weather.description)">
-                                Today
-                            </div>
-                            <div class="p-2">
-                                {{ weather.temp.toFixed() + '°' }} / {{ weather.feels_like.toFixed()+ '°' }} - {{ weather.description }}
-                            </div>
-                        </div>
-                        <div v-else class="w-full h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer " @click="selectDay(day)">
-                            <div class="p-4 text-center text-white rounded-t-md" :class="getColour(day.weather[0].main)">
-                                {{ String(new Date((day.dt)*1000)).substring(0,10) }}
-                            </div>
-                            <div class="p-2">
-                                {{ day.temp.max.toFixed() + '°' }} / {{ day.temp.min.toFixed() + '°' }} - {{ day.weather[0].main }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
+            <div v-else class="flex justify-center text-lg font-bold text-gray-700">
+                <h1>Getting Location...</h1>
             </div>
         </div>
     </main>
@@ -246,6 +278,10 @@ export default {
                 temp: null,
                 sunrise: null,
                 sunset: null,
+                windspeed: null,
+                windgust: null,
+                min: null,
+                max: null,
                 feels_like: null,
                 description: null,
                 hourly: [],
@@ -310,6 +346,10 @@ export default {
                 this.weather.description = res.data.current.weather[0].main
                 this.weather.hourly = res.data.hourly
                 this.weather.forcast.daily = res.data.daily
+                this.weather.max = res.data.daily[0].temp.max
+                this.weather.min = res.data.daily[0].temp.min
+                this.weather.windspeed = res.data.daily[0].wind_speed
+                this.weather.windgust = res.data.daily[0].wind_gust
             })
         },
         selectDay(day) {
