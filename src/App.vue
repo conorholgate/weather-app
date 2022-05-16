@@ -188,7 +188,7 @@
                 <div>
                     <div class="grid grid-rows-1 gap-2 mt-4 md:grid-cols-2 lg:grid-flow-col">
                         <div v-for="(day, key) in weather.forcast.daily" :key="key">
-                            <div v-if="key <= 0" class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer" @click="viewToday = true">
+                            <div v-if="key <= 0" class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer w-36" @click="viewToday = true">
                                 <div class="p-4 text-center text-white rounded-t-md" :class="getColour(weather.description)">
                                     Today
                                 </div>
@@ -196,12 +196,12 @@
                                     {{ weather.temp.toFixed() + '°' }} / {{ weather.feels_like.toFixed()+ '°' }} - {{ weather.description }}
                                 </div>
                                 <div class="flex justify-center">
-                                    <img v-if="weather.description === 'Clouds'" src="src/assets/icons8-clouds-32.png" alt="">
-                                    <img v-if="weather.description === 'Rain'" src="src/assets/icons8-rain-32.png" alt="">
-                                    <img v-if="weather.description === 'Clear'" src="src/assets/icons8-sun-32.png" alt="">
+                                    <img v-if="weather.description === 'Clouds'" src="/src/assets/icons8-clouds-32.png" alt="">
+                                    <img v-if="weather.description === 'Rain'" src="/src/assets/icons8-rain-32.png" alt="">
+                                    <img v-if="weather.description === 'Clear'" src="/src/assets/icons8-sun-32.png" alt="">
                                 </div>
                             </div>
-                            <div v-else class="w-full h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer " @click="selectDay(day)">
+                            <div v-else class="h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer w-36 " @click="selectDay(day)">
                                 <div class="p-4 text-center text-white rounded-t-md" :class="getColour(day.weather[0].main)">
                                     {{ String(new Date((day.dt)*1000)).substring(0,10) }}
                                 </div>
@@ -209,9 +209,9 @@
                                     {{ day.temp.max.toFixed() + '°' }} / {{ day.temp.min.toFixed() + '°' }} - {{ day.weather[0].main }}
                                 </div>
                                 <div class="flex justify-center">
-                                    <img v-if="day.weather[0].main === 'Clouds'" src="src/assets/icons8-clouds-32.png" alt="">
-                                    <img v-if="day.weather[0].main === 'Rain'" src="src/assets/icons8-rain-32.png" alt="">
-                                    <img v-if="day.weather[0].main === 'Clear'" src="src/assets/icons8-sun-32.png" alt="">
+                                    <img v-if="day.weather[0].main === 'Clouds'" src="/src/assets/icons8-clouds-32.png" alt="">
+                                    <img v-if="day.weather[0].main === 'Rain'" src="/src/assets/icons8-rain-32.png" alt="">
+                                    <img v-if="day.weather[0].main === 'Clear'" src="/src/assets/icons8-sun-32.png" alt="">
                                 </div>
                             </div>
                         </div>
@@ -272,6 +272,7 @@ export default {
     data () {
         return {
             searchInput: null,
+            geoLocation: null,
             viewToday: true,
             locationResults: {},
             weather: {
@@ -321,6 +322,14 @@ export default {
             }
             function error(err) {
                 console.warn(`ERROR(${err.code}): ${err.message}`);
+                axios.get('https://ip.seeip.org/geoip').then(res => {
+                    //console.log(res.data);
+                    var data = {
+                        latitude: res.data.latitude,
+                        longitude: res.data.longitude
+                    }
+                    vm.getCurrentLocationName(data)
+                })
             }
             navigator.geolocation.getCurrentPosition(success, error, options);
         },
