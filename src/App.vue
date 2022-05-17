@@ -24,12 +24,28 @@
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <SearchIcon class="w-5 h-5" aria-hidden="true" />
                     </div>
-                    <input id="search" class="block w-full py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 bg-white border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white focus:border-white sm:text-sm" 
+                    <input id="search" class="block w-full py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 bg-white focus:outline-none sm:text-sm" 
+                        :class="searching && searchInput != '' ? 'border border-transparent rounded-t-md' : 'border border-transparent rounded-md'"
                         placeholder="Enter post code, city or town" 
                         type="search" 
                         name="search" 
                         v-model="searchInput"
-                        @keyup.enter="getSearchedLocation"/>
+                        @keyup.enter="getSearchedLocations"/>
+
+                    <template v-if="searching && searchInput">
+                        <div class="absolute w-full h-32 overflow-y-scroll text-gray-900 bg-white border border-transparent rounded-b-md border-t-gray-200">
+                            <div v-if="!searchingLocations.length" class="px-4 py-2">
+                                Fetching locations...
+                            </div>
+                            <div v-if="searchingLocations.length" class="">
+                                <div v-for="(location,key) in searchingLocations" :key="key">
+                                    <p class="px-4 py-1.5 cursor-pointer hover:bg-gray-200" @click="getSearchedLocation(location,key)">{{ location.formatted }}</p>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
                 </div>
               </div>
               <button class="px-2 ml-2 leading-5 text-white border-2 rounded-md cursor-pointer hover:bg-white hover:text-indigo-500"
@@ -271,7 +287,9 @@ export default {
     },
     data () {
         return {
+            searching: false,
             searchInput: null,
+            searchingLocations: [],
             geoLocation: null,
             viewToday: true,
             locationResults: {},
@@ -340,11 +358,23 @@ export default {
                 this.getWeather()
             })
         },
-        getSearchedLocation() {
-            axios.get(`https://api.geoapify.com/v1/geocode/search?text=${this.searchInput}&format=json&apiKey=${'7a651eee8519432596636c4cc8ef8de7'}`).then(res => {
-                this.locationResults = res.data.results[0]
-                this.getWeather()
+        getSearchedLocations() {
+            this.searchingLocations = []
+            this.searching = true
+            axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${this.searchInput}&format=json&apiKey=${'7a651eee8519432596636c4cc8ef8de7'}`).then(res => {
+                this.searchingLocations = res.data.results
             })
+            // axios.get(`https://api.geoapify.com/v1/geocode/search?text=${this.searchInput}&format=json&apiKey=${'7a651eee8519432596636c4cc8ef8de7'}`).then(res => {
+            //     this.locationResults = res.data.results[0]
+            //     this.getWeather()
+            // })
+        },
+        getSearchedLocation(location, key) {
+            this.searching = false
+            this.searchInput = location.formatted
+            this.locationResults = location
+            this.getWeather()
+
         },
         getWeather() {
             axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${this.locationResults.bbox.lat1}&lon=${this.locationResults.bbox.lon1}&units=${this.units}&appid=1a9be1417e0b10b37966c6b492063917`).then(res => {
