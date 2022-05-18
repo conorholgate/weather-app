@@ -34,14 +34,16 @@
 
                     <template v-if="searching && searchInput">
                         <div class="absolute w-full h-32 overflow-y-scroll text-gray-900 bg-white border border-transparent rounded-b-md border-t-gray-200">
-                            <div v-if="!searchingLocations.length" class="px-4 py-2">
-                                Fetching locations...
-                            </div>
                             <div v-if="searchingLocations.length" class="">
                                 <div v-for="(location,key) in searchingLocations" :key="key">
                                     <p class="px-4 py-1.5 cursor-pointer hover:bg-gray-200" @click="getSearchedLocation(location,key)">{{ location.formatted }}</p>
-                                    
                                 </div>
+                            </div>
+                            <div v-if="noLocationsFound">
+                                <p class="px-4 py-1.5">No location found, please try again</p>
+                            </div>
+                            <div v-if="!noLocationsFound && !searchingLocations.length">
+                                <p class="px-4 py-1.5">Fetching Locations...</p>
                             </div>
                         </div>
                     </template>
@@ -49,7 +51,7 @@
                 </div>
               </div>
               <button class="px-2 ml-2 leading-5 text-white border-2 rounded-md cursor-pointer hover:bg-white hover:text-indigo-500"
-                @click="getSearchedLocation"
+                @click="getSearchedLocations"
               >Search</button>
               <div class="items-center hidden p-2 ml-4 text-white border-2 border-white rounded-full cursor-pointer md:flex hover:bg-white hover:text-indigo-500"
                     >
@@ -202,9 +204,9 @@
                     </div>
                 </div>
                 <div>
-                    <div class="grid grid-rows-1 gap-2 mt-4 md:grid-cols-2 lg:grid-flow-col">
-                        <div v-for="(day, key) in weather.forcast.daily" :key="key">
-                            <div v-if="key <= 0" class="flex flex-col h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer w-36" @click="viewToday = true">
+                    <div class="grid grid-flow-col gap-2 mt-4 overflow-x-scroll">
+                        <div class="" v-for="(day, key) in weather.forcast.daily" :key="key">
+                            <div v-if="key <= 0" class="flex flex-col h-48 border border-gray-200 rounded-md cursor-pointer w-36" @click="viewToday = true">
                                 <div class="h-24 p-4 text-center text-white rounded-t-md" :class="getColour(weather.description)">
                                     Today
                                 </div>
@@ -217,7 +219,8 @@
                                     <img v-if="weather.description === 'Clear'" src="/src/assets/icons8-sun-32.png" alt="">
                                 </div>
                             </div>
-                            <div v-else class="flex flex-col h-48 max-w-sm border border-gray-200 rounded-md cursor-pointer w-36" @click="selectDay(day)">
+
+                            <div v-else class="flex flex-col h-48 border border-gray-200 rounded-md cursor-pointer w-36" @click="selectDay(day)">
                                 <div class="h-24 p-4 text-center text-white rounded-t-md" :class="getColour(day.weather[0].main)">
                                     {{ String(new Date((day.dt)*1000)).substring(0,10) }}
                                 </div>
@@ -230,12 +233,14 @@
                                     <img v-if="day.weather[0].main === 'Clear'" src="/src/assets/icons8-sun-32.png" alt="">
                                 </div>
                             </div>
+
                         </div>
+                        
                     </div>
                 </div>
             </div>
             <div v-else class="flex justify-center text-lg font-bold text-gray-700">
-                <h1>Getting Location...</h1>
+                <h1>Getting Forcast</h1>
             </div>
         </div>
     </main>
@@ -288,6 +293,7 @@ export default {
     data () {
         return {
             searching: false,
+            noLocationsFound: false,
             searchInput: null,
             searchingLocations: [],
             geoLocation: null,
@@ -359,15 +365,18 @@ export default {
             })
         },
         getSearchedLocations() {
+            this.noLocationsFound = false
             this.searchingLocations = []
             this.searching = true
             axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${this.searchInput}&format=json&apiKey=${'7a651eee8519432596636c4cc8ef8de7'}`).then(res => {
-                this.searchingLocations = res.data.results
+                if (!res.data.results.length) {
+                    this.noLocationsFound = true
+                } else {
+                    this.searchingLocations = res.data.results
+                }
+                
+                
             })
-            // axios.get(`https://api.geoapify.com/v1/geocode/search?text=${this.searchInput}&format=json&apiKey=${'7a651eee8519432596636c4cc8ef8de7'}`).then(res => {
-            //     this.locationResults = res.data.results[0]
-            //     this.getWeather()
-            // })
         },
         getSearchedLocation(location, key) {
             this.searching = false
@@ -422,6 +431,12 @@ export default {
     },
     computed: {
         
+    },
+    watch: {
+        searchInput(newValue, oldValue) {
+            this.noLocationsFound = false
+            this.searching = false
+        }
     },
     mounted() {
         this.getCurrentLocation()
