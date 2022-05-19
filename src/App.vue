@@ -1,132 +1,58 @@
 <template>
   <div class="min-h-full">
     <div class="bg-indigo-600">
-      <Disclosure as="nav" class="bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none" v-slot="{ open }">
-        <div class="px-2 mx-auto max-w-7xl sm:px-4 lg:px-8">
-          <div class="relative flex items-center justify-between h-16 lg:border-b lg:border-indigo-400 lg:border-opacity-25">
-            <div class="flex items-center px-2 lg:px-0">
-                <div class="hidden text-white lg:block">
-                    WeatherApp
-                    <!-- <img class="block w-8 h-8" src="https://tailwindui.com/img/logos/workflow-mark-indigo-300.svg" alt="Workflow" /> -->
-                </div>
-                <!-- <div class="hidden lg:block lg:ml-10">
-                <div class="flex space-x-4">
-                  <a v-for="item in navigation" :key="item.name" :href="item.href" :class="[item.current ? 'bg-indigo-700 text-white' : 'text-white hover:bg-indigo-500 hover:bg-opacity-75', 'rounded-md py-2 px-3 text-sm font-medium']" :aria-current="item.current ? 'page' : undefined">
-                    {{ item.name }}
-                  </a>
-                </div>
-              </div> -->
-            </div>
-            <div class="flex justify-center flex-1 lg:ml-6 lg:justify-end">
-              <div class="w-full max-w-lg lg:max-w-lg">
-                <label for="search" class="sr-only">Search</label>
-                <div class="relative text-gray-400 focus-within:text-gray-600">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <SearchIcon class="w-5 h-5" aria-hidden="true" />
+        <Disclosure as="nav" class="bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none" v-slot="{ open }">
+            <div class="px-2 mx-auto max-w-7xl sm:px-4 lg:px-8">
+                <div class="relative flex items-center justify-between h-16 lg:border-b lg:border-indigo-400 lg:border-opacity-25">
+                    <div class="flex items-center lg:px-0">
+                        <div class="hidden text-white lg:block">
+                            WeatherApp
+                            <!-- <img class="block w-8 h-8" src="https://tailwindui.com/img/logos/workflow-mark-indigo-300.svg" alt="Workflow" /> -->
+                        </div>
                     </div>
-                    <input id="search" class="block w-full py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 bg-white focus:outline-none sm:text-sm" 
-                        :class="searching && searchInput != '' ? 'border border-transparent rounded-t-md' : 'border border-transparent rounded-md'"
-                        placeholder="Enter post code, city or town" 
-                        type="search" 
-                        name="search" 
-                        v-model="searchInput"
-                        @keyup.enter="getSearchedLocations"/>
-
-                    <template v-if="searching && searchInput">
-                        <div class="absolute w-full h-32 overflow-y-scroll text-gray-900 bg-white border border-transparent rounded-b-md border-t-gray-200">
-                            <div v-if="searchingLocations.length" class="">
-                                <div v-for="(location,key) in searchingLocations" :key="key">
-                                    <p class="px-4 py-1.5 cursor-pointer hover:bg-gray-200" @click="getSearchedLocation(location,key)">{{ location.formatted }}</p>
+                    <div class="flex justify-center flex-1 px-2 lg:px-0 lg:ml-6 lg:justify-end">
+                        <div class="w-full max-w-lg lg:max-w-lg">
+                            <label for="search" class="sr-only">Search</label>
+                            <div class="relative text-gray-400 focus-within:text-gray-600">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <SearchIcon class="w-5 h-5" aria-hidden="true" />
                                 </div>
-                            </div>
-                            <div v-if="noLocationsFound">
-                                <p class="px-4 py-1.5">No location found, please try again</p>
-                            </div>
-                            <div v-if="!noLocationsFound && !searchingLocations.length">
-                                <p class="px-4 py-1.5">Fetching Locations...</p>
+                                <input id="search" class="block w-full py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 bg-white focus:outline-none sm:text-sm" 
+                                    :class="searching && searchInput != '' ? 'border border-transparent rounded-t-md' : 'border border-transparent rounded-md'"
+                                    placeholder="Enter post code, city or town" 
+                                    type="search" 
+                                    name="search" 
+                                    v-model="searchInput"
+                                    @keyup.enter="getSearchedLocations"/>
+
+                                <template v-if="searching && searchInput">
+                                    <div class="absolute w-full h-32 overflow-y-scroll text-gray-900 bg-white border border-transparent rounded-b-md border-t-gray-200">
+                                        <div v-if="searchingLocations.length" class="">
+                                            <div v-for="(location,key) in searchingLocations" :key="key">
+                                                <p class="px-4 py-1.5 cursor-pointer hover:bg-gray-200" @click="getSearchedLocation(location,key)">{{ location.formatted }}</p>
+                                            </div>
+                                        </div>
+                                        <div v-if="noLocationsFound">
+                                            <p class="px-4 py-1.5">No location found, please try again</p>
+                                        </div>
+                                        <div v-if="!noLocationsFound && !searchingLocations.length">
+                                            <p class="px-4 py-1.5">Fetching Locations...</p>
+                                        </div>
+                                    </div>
+                                </template>
+
                             </div>
                         </div>
-                    </template>
-
+                        <button class="px-2 ml-2 leading-5 text-white border-2 rounded-md cursor-pointer hover:bg-white hover:text-indigo-500"
+                            @click="getSearchedLocations"
+                        >Search</button>
+                        <div class="items-center hidden p-2 ml-4 text-white border-2 border-white rounded-full cursor-pointer md:flex hover:bg-white hover:text-indigo-500">
+                            <LocationMarkerIcon class="w-5 h-5" aria-hidden="true" @click="getCurrentLocation"/>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <button class="px-2 ml-2 leading-5 text-white border-2 rounded-md cursor-pointer hover:bg-white hover:text-indigo-500"
-                @click="getSearchedLocations"
-              >Search</button>
-              <div class="items-center hidden p-2 ml-4 text-white border-2 border-white rounded-full cursor-pointer md:flex hover:bg-white hover:text-indigo-500"
-                    >
-                    <LocationMarkerIcon class="w-5 h-5" aria-hidden="true" @click="getCurrentLocation"/>
-              </div>
             </div>
-
-            <div class="flex lg:hidden">
-              <!-- Mobile menu button -->
-              <DisclosureButton class="inline-flex items-center justify-center p-2 text-indigo-200 bg-indigo-600 rounded-md hover:text-white hover:bg-indigo-500 hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
-                <span class="sr-only">Open main menu</span>
-                <MenuIcon v-if="!open" class="block w-6 h-6" aria-hidden="true" />
-                <XIcon v-else class="block w-6 h-6" aria-hidden="true" />
-              </DisclosureButton>
-            </div>
-
-            <!-- <div class="hidden lg:block lg:ml-4">
-              <div class="flex items-center">
-                <button type="button" class="flex-shrink-0 p-1 text-indigo-200 bg-indigo-600 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
-                  <span class="sr-only">View notifications</span>
-                  <BellIcon class="w-6 h-6" aria-hidden="true" />
-                </button>
-
-                <Menu as="div" class="relative flex-shrink-0 ml-3">
-                  <div>
-                    <MenuButton class="flex text-sm text-white bg-indigo-600 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
-                      <span class="sr-only">Open user menu</span>
-                      <img class="w-8 h-8 rounded-full" :src="user.imageUrl" alt="" />
-                    </MenuButton>
-                  </div>
-                  <transition enter-active-class="transition duration-100 ease-out" enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="transform scale-100 opacity-100" leave-to-class="transform scale-95 opacity-0">
-                    <MenuItems class="absolute right-0 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
-                        <a :href="item.href" :class="[active ? 'bg-gray-100' : '', 'block py-2 px-4 text-sm text-gray-700']">
-                          {{ item.name }}
-                        </a>
-                      </MenuItem>
-                    </MenuItems>
-                  </transition>
-                </Menu>
-              </div>
-            </div> -->
-          </div>
-        </div>
-
-        <DisclosurePanel class="lg:hidden">
-          <div class="px-2 pt-2 pb-3 space-y-1">
-            <DisclosureButton v-for="item in navigation" :key="item.name" as="a" :href="item.href" :class="[item.current ? 'bg-indigo-700 text-white' : 'text-white hover:bg-indigo-500 hover:bg-opacity-75', 'block rounded-md py-2 px-3 text-base font-medium']" :aria-current="item.current ? 'page' : undefined">
-              {{ item.name }}
-            </DisclosureButton>
-          </div>
-          <div class="pt-4 pb-3 border-t border-indigo-700">
-            <div class="flex items-center px-5">
-              <div class="flex-shrink-0">
-                <img class="w-10 h-10 rounded-full" :src="user.imageUrl" alt="" />
-              </div>
-              <div class="ml-3">
-                <div class="text-base font-medium text-white">{{ user.name }}</div>
-                <div class="text-sm font-medium text-indigo-300">{{ user.email }}</div>
-              </div>
-              <button type="button" class="flex-shrink-0 p-1 ml-auto text-indigo-200 bg-indigo-600 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
-                <span class="sr-only">View notifications</span>
-                <BellIcon class="w-6 h-6" aria-hidden="true" />
-              </button>
-            </div>
-            <div class="px-2 mt-3 space-y-1">
-              <DisclosureButton v-for="item in userNavigation" :key="item.name" as="a" :href="item.href" class="block px-3 py-2 text-base font-medium text-white rounded-md hover:bg-indigo-500 hover:bg-opacity-75">
-                {{ item.name }}
-              </DisclosureButton>
-            </div>
-          </div>
-        </DisclosurePanel>
-        
-      </Disclosure>
-      
+        </Disclosure>
     </div>
 
     <main class="mt-8">
@@ -144,10 +70,12 @@
                         <div  class="px-4 py-2 text-gray-700 text-md">
                             <div class="flex items-center">
                                 <span class="mr-4 text-7xl">{{ weather.temp ? weather.temp.toFixed() + '°' : ''}}</span>
-                                <div v-if="weather.max && weather.min" class="flex w-full justify-evenly">
+                                <div v-if="weather.max && weather.min" class="lg:grid lg:grid-cols-2">
                                     <div>
-                                        <span>Highs of {{ weather.max.toFixed() + '°'}} | </span>
-                                        <span>Lows of {{ weather.min.toFixed() + '°'}}</span>
+                                        <span>Rain {{ weather.rain ? weather.rain + 'mm' : 0 + 'mm' }}</span>
+                                    </div>
+                                    <div>
+                                        <span>Humidity {{ weather.humidity + '%'}}</span>
                                     </div>
                                     <div>
                                         <span>Sunrise {{ String(new Date((weather.sunrise)*1000)).substring(15,21) }} | </span>
@@ -160,7 +88,7 @@
                                 </div>
                             </div>
 
-                            <div class="items-center hidden h-64 grid-flow-col gap-2 md:grid">
+                            <div class="items-center h-64 grid-flow-col gap-2 mt-4">
                                 <div class="grid grid-flow-col gap-2 overflow-y-scroll">
                                     <div class="w-1/2" v-for="(hour, key) in weather.hourly" :key="key">
                                     <div v-if="checkTime(hour.dt)">
@@ -181,13 +109,15 @@
                         <div class="p-4 text-white rounded-t-md" :class="getColour(selectedDay.weather[0].main)">
                             {{ String(new Date((selectedDay.dt)*1000)).substring(0,10) }} - {{ selectedDay.weather[0].main }}
                         </div>
-                        <div  class="flex flex-col px-4 py-2 text-gray-700 text-md">
-
+                        <div  class="px-4 py-2 text-gray-700 text-md">
                             <div class="flex items-center">
-                                <div v-if="selectedDay.temp.max && selectedDay.temp.min" class="flex w-full justify-evenly">
+                                <span class="mr-4 text-7xl">{{ selectedDay.temp.max.toFixed() + '°' }}</span>
+                                <div v-if="selectedDay.temp.max && selectedDay.temp.min" class="lg:grid lg:grid-cols-2">
                                     <div>
-                                        <span>Highs of {{selectedDay.temp.max.toFixed() + '°'}} | </span>
-                                        <span>Lows of {{ selectedDay.temp.min.toFixed() + '°'}}</span>
+                                        <span>Rain {{ selectedDay.rain + 'mm' }}</span>
+                                    </div>
+                                    <div>
+                                         <span>Humidity {{ selectedDay.humidity + '%'}}</span>
                                     </div>
                                     <div>
                                         <span>Sunrise {{ String(new Date((selectedDay.sunrise)*1000)).substring(15,21) }} | </span>
@@ -301,6 +231,8 @@ export default {
             locationResults: {},
             weather: {
                 temp: null,
+                humidity: null,
+                rain: null,
                 sunrise: null,
                 sunset: null,
                 windspeed: null,
@@ -361,6 +293,7 @@ export default {
             var searchQuery = location.latitude + ' ' + location.longitude
             axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchQuery}&format=json&apiKey=${'7a651eee8519432596636c4cc8ef8de7'}`).then(res => {
                 this.locationResults = res.data.results[0]
+                this.searchInput = res.data.results[0].formatted
                 this.getWeather()
             })
         },
@@ -374,8 +307,6 @@ export default {
                 } else {
                     this.searchingLocations = res.data.results
                 }
-                
-                
             })
         },
         getSearchedLocation(location, key) {
@@ -388,6 +319,7 @@ export default {
         getWeather() {
             axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${this.locationResults.bbox.lat1}&lon=${this.locationResults.bbox.lon1}&units=${this.units}&appid=1a9be1417e0b10b37966c6b492063917`).then(res => {
                 this.weather.temp = res.data.current.temp
+                this.weather.humidity = res.data.current.humidity
                 this.weather.sunrise = res.data.current.sunrise
                 this.weather.sunset = res.data.current.sunset
                 this.weather.feels_like = res.data.current.feels_like
@@ -398,6 +330,7 @@ export default {
                 this.weather.min = res.data.daily[0].temp.min
                 this.weather.windspeed = res.data.daily[0].wind_speed
                 this.weather.windgust = res.data.daily[0].wind_gust
+                this.weather.rain = res.data.daily[0].rain
             })
         },
         selectDay(day) {
