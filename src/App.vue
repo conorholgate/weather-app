@@ -174,6 +174,13 @@
             </div>
         </div>
     </main>
+    <footer class="absolute bottom-0 px-4 py-2">
+        <div class="flex justify-center text-gray-400">
+            <div>
+                <span>© 2022 Copyright All Rights Reserved</span>
+            </div>
+        </div>
+    </footer>
   </div>
 </template>
 
