@@ -17,7 +17,7 @@
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                     <SearchIcon class="w-5 h-5" aria-hidden="true" />
                                 </div>
-                                <input id="search" class="block w-full py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 bg-white focus:outline-none sm:text-sm" 
+                                <input id="search" class="block w-full py-2 pl-10 pr-3 text-sm leading-5 text-gray-900 placeholder-gray-500 bg-white focus:outline-none lg:text-md" 
                                     :class="searching && searchInput != '' ? 'border border-transparent rounded-t-md' : 'border border-transparent rounded-md'"
                                     placeholder="Enter post code, city or town" 
                                     type="search" 
@@ -88,7 +88,7 @@
                                 </div>
                             </div>
 
-                            <div class="items-center h-64 grid-flow-col gap-2 mt-4">
+                            <div class="items-center grid-flow-col gap-2 pb-4 mt-4">
                                 <div class="grid grid-flow-col gap-2 overflow-y-scroll">
                                     <div class="w-1/2" v-for="(hour, key) in weather.hourly" :key="key">
                                     <div v-if="checkTime(hour.dt)">
@@ -114,7 +114,7 @@
                                 <span class="mr-4 text-7xl">{{ selectedDay.temp.max.toFixed() + '°' }}</span>
                                 <div v-if="selectedDay.temp.max && selectedDay.temp.min" class="lg:grid lg:grid-cols-2">
                                     <div>
-                                        <span>Rain {{ selectedDay.rain + 'mm' }}</span>
+                                        <span>Rain {{ selectedDay.rain ? selectedDay.rain + 'mm' : '0mm' }}</span>
                                     </div>
                                     <div>
                                          <span>Humidity {{ selectedDay.humidity + '%'}}</span>
@@ -277,9 +277,10 @@ export default {
                 vm.getCurrentLocationName(data)
             }
             function error(err) {
-                console.warn(`ERROR(${err.code}): ${err.message}`);
+                alert(err.message + '. Please search for a location.')
+               // console.warn(`ERROR(${err.code}): ${err.message}`);
                 axios.get('https://ip.seeip.org/geoip').then(res => {
-                    //console.log(res.data);
+                    console.log(res.data);
                     var data = {
                         latitude: res.data.latitude,
                         longitude: res.data.longitude
