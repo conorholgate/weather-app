@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full">
+  <div class="flex flex-col min-h-full">
     <div class="bg-indigo-600">
         <Disclosure as="nav" class="bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none" v-slot="{ open }">
             <div class="px-2 mx-auto max-w-7xl sm:px-4 lg:px-8">
@@ -174,14 +174,14 @@
             </div>
         </div>
     </main>
-    <footer class="absolute bottom-0 px-4 py-2">
-        <div class="flex justify-center text-gray-400">
-            <div>
-                <span>© 2022 Copyright All Rights Reserved</span>
+        <footer class="flex justify-center px-4 py-2">
+            <div class="text-gray-400 ">
+                <div>
+                    <span>© 2022 Copyright All Rights Reserved</span>
+                </div>
             </div>
-        </div>
-    </footer>
-  </div>
+        </footer>
+    </div>
 </template>
 
 <script>
