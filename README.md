@@ -1,7 +1,26 @@
-# Vue 3 + Vite
+WeatherApp
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A weather application that provides basic weather reports for today and the future forcast of 6 days.
 
-## Recommended IDE Setup
+It is built on Vite, Vue 3(using options API) & Tailwind. It also has Express.js server running. I used this for it be served on Digital Ocean.
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+Reasons for using Vite:
+- Fast server loading
+- Fast hot reloading
+- Small package size
+
+Reasons for using Vue 3:
+- Goes hand in hand with Vite
+
+Reasons for using Tailwind:
+- Great customisation
+- Very clean inline code
+- Great documentation
+
+How to install and run:
+- Pull the repo >> git clone https://conorholgate/weather-app.git
+- npm install
+- npm run dev or npm start (for node js server)
+
+Then just search for a location and have a look at the weather.
+
