@@ -278,7 +278,7 @@ export default {
         },
         getCurrentLocationName(location){
             var searchQuery = location.latitude + ' ' + location.longitude
-            axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchQuery}&format=json&apiKey=${'7a651eee8519432596636c4cc8ef8de7'}`).then(res => {
+            axios.get(`https://api.geoapify.com/v1/geocode/search?text=${searchQuery}&format=json&apiKey=${import.meta.env.VITE_LOCATION_API_KEY}`).then(res => {
                 this.locationResults = res.data.results[0]
                 this.searchInput = res.data.results[0].formatted
                 this.getWeather()
@@ -288,7 +288,7 @@ export default {
             this.noLocationsFound = false
             this.searchingLocations = []
             this.searching = true
-            axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${this.searchInput}&format=json&apiKey=${'7a651eee8519432596636c4cc8ef8de7'}`).then(res => {
+            axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${this.searchInput}&format=json&apiKey=${import.meta.env.VITE_LOCATION_API_KEY}`).then(res => {
                 if (!res.data.results.length) {
                     this.noLocationsFound = true
                 } else {
@@ -304,7 +304,7 @@ export default {
 
         },
         getWeather() {
-            axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${this.locationResults.bbox.lat1}&lon=${this.locationResults.bbox.lon1}&units=${this.units}&appid=1a9be1417e0b10b37966c6b492063917`).then(res => {
+            axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${this.locationResults.bbox.lat1}&lon=${this.locationResults.bbox.lon1}&units=${this.units}&appid=${import.meta.env.VITE_WEATHER_API_KEY}`).then(res => {
                 this.weather.temp = res.data.current.temp
                 this.weather.humidity = res.data.current.humidity
                 this.weather.sunrise = res.data.current.sunrise
