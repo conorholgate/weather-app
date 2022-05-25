@@ -20,6 +20,7 @@ Reasons for using Tailwind:
 How to install and run:
 - Pull the repo >> git clone https://conorholgate/weather-app.git
 - npm install
+- open the .env file, and paste your api keys
 - npm run dev or npm start (for node js server)
 
 Then just search for a location and have a look at the weather.
